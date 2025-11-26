@@ -3,15 +3,15 @@ from textual.reactive import reactive
 from textual import on
 from textual.widgets import Header, Input, ListView, Label, ListItem
 
-from pathlib import Path
-from rapidfuzz import process, fuzz
-
 class CmdHistoryApp(App):
     TITLE = "CmdHistory"
     SUB_TITLE = "A Tool to easily search previously executed commands in the terminal."
     CSS_PATH = "app.tcss"
 
-
+    # stores history for the current command
+    history: list[str] = reactive([], layout=False)
+    full_history = list[str] = []
+    # current keyword
     search_keyword = reactive(str)
 
     def compose(self) -> ComposeResult:
@@ -21,7 +21,11 @@ class CmdHistoryApp(App):
         yield self.list_view
 
     def on_mount(self) -> None:
-        self.items = ["one", "two", "three", "four", "five"]
+        #Load full history at startup
+        self.full_history = self.load_history()
+        # Initially show the last 50 commands
+        self.items = list(reversed(self.full_history[-50:]))
+
 
     def add_new_item(self) -> None:
         self.items = [*self.items, f"Item {len(self.items)+1}"]
