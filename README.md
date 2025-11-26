@@ -124,10 +124,15 @@ Run locally:
 cmdfinder
 ```
 
-or
+### or
 
 ```bash
 python -m cmdfinder.app
+```
+
+### or
+```bash
+cf
 ```
 
 ---
