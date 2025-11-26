@@ -1,11 +1,11 @@
 import os
+
 import subprocess
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual import on
 from textual.widgets import Header, Input, ListView, Label, ListItem, Footer
-
-from history import load_history, fuzzy_search, HistoryEntry
+from .history import load_history, fuzzy_search, HistoryEntry
 
 
 class CmdHistoryApp(App[str | None]):
@@ -60,10 +60,10 @@ class CmdHistoryApp(App[str | None]):
                 )
             )
 
-    def watch_items(self) -> None:
+    def watch_items(self,  items: list[HistoryEntry]) -> None:
         self.refresh_items_view()
 
-    def watch_show_timestamps(self) -> None:
+    def watch_show_timestamps(self, show: bool) -> None:
         self.refresh_items_view()
 
     # ---------- Search ----------
@@ -107,14 +107,15 @@ class CmdHistoryApp(App[str | None]):
         self.show_timestamps = not self.show_timestamps
 
 
-# ---------- Execute command OUTSIDE the TUI ----------
+# ---------- Entry Point for Package ----------
 
-if __name__ == "__main__":
+def main():
     selected_cmd = CmdHistoryApp().run()
 
     if selected_cmd:
         shell = os.environ.get("SHELL", "/bin/sh")
-
         print(f"$ {selected_cmd}")
-
         subprocess.run([shell, "-lc", selected_cmd])
+
+if __name__ == "__main__":
+    main()

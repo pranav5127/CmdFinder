@@ -1,49 +1,137 @@
 # CmdFinder
 
-**CmdFinder** is a terminal-based user interface (TUI) tool that allows you to fuzzy search, navigate, and execute commands from your local shell history. Built with [Textual](https://textual.textualize.io/) and Python.
+**CmdFinder** is a terminal-based user interface (TUI) that lets you fuzzy-search, browse, and execute commands from your shell history. It’s built with [Textual](https://textual.textualize.io/) and [RapidFuzz](https://github.com/maxbachmann/RapidFuzz).
 
 <p align="center">
-  <img src="media/cmdfinder.gif" alt="CmdFinder TUI demo" width="70%" />
+  <img src="https://raw.githubusercontent.com/pranav5127/CmdFinder/master/media/cmdfinder.gif" alt="CmdFinder TUI demo" width="70%" />
 </p>
+
 <p align="center">
-  <img src="media/img.png" alt="CmdFinder search view" width="70%" />
+  <img src="https://raw.githubusercontent.com/pranav5127/CmdFinder/master/media/img.png" alt="CmdFinder search view" width="70%" />
 </p>
+
+---
 
 ## Features
 
-* **Fuzzy Search:** Instantly find commands even if you don't remember the exact syntax (powered by `rapidfuzz`).
-* **Shell Support:** Automatically detects and loads history from Zsh (`~/.zsh_history`) and Bash (`~/.bash_history`).
-* **Instant Execution:** Select a command to run it immediately in your active shell.
-* **Vim-like Navigation:** Navigate results using `j` and `k`.
-* **Metadata:** Toggle timestamp views to see when commands were run.
+- 🔍 **Fuzzy Search:** Quickly find commands even if you don’t remember the exact syntax.
+- 🐚 **Shell Support:** Reads history from:
+  - Zsh: `~/.zsh_history`
+  - Bash: `~/.bash_history`
+- ⚡ **Instant Execution:** Select a command and run it immediately in your shell.
+- 🧭 **Vim-like Navigation:** Navigate with `j` / `k`.
+- 🕒 **Timestamps:** Toggle timestamps on/off.
+- 🎨 **Modern TUI:** Built using Textual.
+
+---
+
+## Requirements
+
+- Python **3.10+**
+- Bash/Zsh or compatible shell
+- Read access to history files
+
+---
 
 ## Installation
 
-### Prerequisites
-* Python 3.10+
 
-### Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/pranav5127/CmdFinder.git
-    cd cmdfinder
-    ```
+```bash
+pip install cmdfinder
+```
 
-2.  **Create a virtual environment (optional but recommended):**
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+Run:
 
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt 
-    ```
+```bash
+cmdfinder
+```
+### or
+```bash
+cf
+```
+
+If the command is not found, add `~/.local/bin` to PATH:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Or for zsh:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+---
+
+### Install from Source
+
+```bash
+git clone https://github.com/pranav5127/CmdFinder.git
+cd CmdFinder
+```
+
+(Optional) create a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install in editable mode:
+
+```bash
+pip install -e .
+```
+
+Run:
+
+```bash
+cmdfinder
+```
+
+---
 
 ## Usage
 
-To start the application, run:
+To start the TUI:
 
 ```bash
-python app/app.py
+cmdfinder
+```
+
+### Key Bindings
+
+| Key | Action |
+|-----|--------|
+| `j` | Move down |
+| `k` | Move up |
+| `↓` / `↑` | Move cursor |
+| `Ctrl+s` | Focus search |
+| `l` / `Ctrl+l` | Focus list |
+| `t` | Toggle timestamps |
+| `Enter` | Run selected command |
+| `q` | Quit |
+
+---
+
+Run locally:
+
+```bash
+cmdfinder
+```
+
+or
+
+```bash
+python -m cmdfinder.app
+```
+
+---
+
+## License
+
+CmdFinder is released under the **MIT License**.
