@@ -1,0 +1,11 @@
+Screen {
+    layout: grid;
+    padding: 2;
+}
+
+#search{
+    row-span: 4;
+    border: rgb(52, 186, 235) round;
+    margin: 2;
+    background: $background;
+}
