@@ -2,7 +2,7 @@
 
 **CmdFinder** is a terminal-based user interface (TUI) tool that allows you to fuzzy search, navigate, and execute commands from your local shell history. Built with [Textual](https://textual.textualize.io/) and Python.
 
-[CmdFinder](https://www.loom.com/embed/0ba6b41659ad45c2ae9bf33ad0ca0f6d)
+[https://www.loom.com/embed/0ba6b41659ad45c2ae9bf33ad0ca0f6d)](https://www.loom.com/embed/0ba6b41659ad45c2ae9bf33ad0ca0f6d)
 
 ## Features
 
