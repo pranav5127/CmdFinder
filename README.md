@@ -8,6 +8,7 @@
 <p align="center">
   <img src="media/img.png" alt="CmdFinder search view" width="70%" />
 </p>
+
 ## Features
 
 * **Fuzzy Search:** Instantly find commands even if you don't remember the exact syntax (powered by `rapidfuzz`).
