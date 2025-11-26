@@ -1,0 +1,4 @@
+[console_scripts]
+cf = cmdfinder.app:main
+cmdfinder = cmdfinder.app:main
+

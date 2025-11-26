@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r") as f:
+    description = f.read()
+
 setup(
     name="cmdfinder",
-    version="1.0.0",
+    version="1.1.0",
     description="Search and run shell history with a Textual TUI",
     packages=find_packages(),
     python_requires=">=3.10",
@@ -32,4 +35,7 @@ setup(
             "cf = cmdfinder.app:main",
         ],
     },
+
+    long_description=description,
+    long_description_content_type="text/markdown"
 )
