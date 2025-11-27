@@ -1,13 +1,24 @@
+Metadata-Version: 2.1
+Name: cmdfinder
+Version: 2.2.1
+Summary: Search and run shell history with a Textual TUI
+Home-page: UNKNOWN
+License: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
 # CmdFinder
 
 CmdFinder is a handy terminal-based user interface (TUI) that lets you fuzzy-search, browse, and execute commands from your shell history. It’s built with **Textual** and **RapidFuzz**.
 
 <p align="center">
-  <img src="media/cf.gif" width="70%" alt="Img"/>
+  <img src="https://raw.githubusercontent.com/pranav5127/CmdFinder/master/media/cmdfinder.gif" alt="CmdFinder TUI demo" width="70%" />
 </p>
 
 <p align="center">
-  <img src="media/img_1.png" alt="CmdFinder search view" width="70%" />
+  <img src="https://raw.githubusercontent.com/pranav5127/CmdFinder/master/media/img.png" alt="CmdFinder search view" width="70%" />
 </p>
 
 ## Features
@@ -122,3 +133,5 @@ cmdfinder
 ## License
 
 CmdFinder is released under the **MIT License**. Enjoy!
+
+
