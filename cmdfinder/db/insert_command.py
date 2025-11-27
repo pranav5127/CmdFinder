@@ -67,7 +67,3 @@ def insert_commands_in_db():
     else:
         logger.error("Not a valid shell — please use zsh or bash.")
         return
-
-
-if __name__ == "__main__":
-    insert_commands_in_db()

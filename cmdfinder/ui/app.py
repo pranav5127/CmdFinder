@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 from typing import Optional
 
 from textual.app import App, ComposeResult
@@ -7,7 +8,11 @@ from textual.reactive import reactive
 from textual import on
 from textual.widgets import Header, Input, ListView, Label, ListItem, Footer
 
+from cmdfinder.config.config import DB_PATH
+from cmdfinder.db.db import init_db
+from cmdfinder.db.insert_command import insert_commands_in_db
 from cmdfinder.history import load_history, fuzzy_search, HistoryEntry
+from cmdfinder.utils.logger import logger
 
 
 class CmdHistoryApp(App[Optional[str]]):
@@ -118,9 +123,25 @@ class CmdHistoryApp(App[Optional[str]]):
         self.show_timestamps = not self.show_timestamps
 
 
+def initialize_if_needed():
+    """Checks if DB exists. If not, initializes tables and imports history."""
+    if not DB_PATH.exists():
+        logger.info(" First run detected. Initializing database...", file=sys.stderr)
+        init_db()
+        logger.info(" Importing existing shell history...", file=sys.stderr)
+
+        try:
+            insert_commands_in_db()
+            print("Initialization complete.", file=sys.stderr)
+        except Exception as e:
+            print(f"Error importing history: {e}", file=sys.stderr)
+
+
 # ---------- Entry Point for Package ----------
 
 def main() -> None:
+    initialize_if_needed()
+
     selected_cmd = CmdHistoryApp().run()
 
     if selected_cmd:

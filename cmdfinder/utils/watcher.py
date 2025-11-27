@@ -55,6 +55,3 @@ def watch():
         logger.info("Flushed new history lines to DB.")
         time.sleep(5)
 
-
-if __name__ == "__main__":
-    watch()

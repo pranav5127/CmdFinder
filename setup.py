@@ -23,6 +23,7 @@ setup(
         "textual==6.6.0",
         "typing_extensions==4.15.0",
         "uc-micro-py==1.0.3",
+        "pygtail",
     ],
 
     package_data={
@@ -31,8 +32,13 @@ setup(
 
     entry_points={
         "console_scripts": [
-            "cmdfinder = cmdfinder.app:main",
-            "cf = cmdfinder.app:main",
+            # Main TUI application
+            "cmdfinder = cmdfinder.ui.app:main",
+            "cf = cmdfinder.ui.app:main",
+            # Background watcher process
+            "cmdfinder-watcher = cmdfinder.utils.watcher:watch",
+            # Service setup utility
+            "cmdfinder-setup = cmdfinder.service_installer:install_service",
         ],
     },
 

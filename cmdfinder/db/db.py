@@ -28,7 +28,3 @@ def init_db():
         cursor = connection.cursor()
         cursor.executescript(create_cmd_table)
         logger.info("db created successfully at ~/.cmdfinder.db")
-
-
-if __name__ == "__main__":
-    init_db()
