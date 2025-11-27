@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="cmdfinder",
-    version="1.1.0",
+    version="2.1.0",
     description="Search and run shell history with a Textual TUI",
     packages=find_packages(),
     python_requires=">=3.10",
@@ -27,7 +27,7 @@ setup(
     ],
 
     package_data={
-        "cmdfinder": ["*.tcss"],
+        "cmdfinder": ["ui/*.tcss"],
     },
 
     entry_points={
@@ -38,7 +38,7 @@ setup(
             # Background watcher process
             "cmdfinder-watcher = cmdfinder.utils.watcher:watch",
             # Service setup utility
-            "cmdfinder-setup = cmdfinder.service_installer:install_service",
+            "cmdfinder-setup = cmdfinder.utils.service_installer:install_service",
         ],
     },
 
