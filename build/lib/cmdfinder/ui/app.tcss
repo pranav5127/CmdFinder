@@ -1,0 +1,50 @@
+/* Root screen layout & colors */
+Screen {
+    layout: vertical;
+    padding: 1 2;
+    background: #020617;
+    color: #e5e7eb;
+}
+
+/* Header bar at the top */
+Header {
+    background: #38bdf8;
+    color: black;
+    text-style: bold;
+}
+
+/* Search input */
+#search {
+    width: 100%;
+    height: 3;
+    margin: 1 0;
+    padding: 0 1;
+    border: round #38bdf8;
+    background: #020617;
+    color: #e5e7eb;
+}
+
+/* History list container */
+#history-list {
+    height: 1fr;
+    margin-top: 1;
+    padding: 0 1;
+    border: round #1f2937;
+    background: #020617;
+    scrollbar-color: #38bdf8;
+}
+
+/* Each list item */
+#history-list > ListItem {
+    padding: 0 1;
+}
+
+/* Hover effect on items */
+#history-list > ListItem:hover {
+    background: #0b1120;
+}
+
+/* When the list has focus, show a brighter border */
+#history-list:focus {
+    border: tall #38bdf8;
+}

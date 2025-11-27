@@ -26,7 +26,6 @@ def watch():
                     str(HISTORY_FILE),
                     offset_file=str(OFFSET_FILE),
                     read_from_end=True,
-                    encoding="latin1",
             ):
                 line = raw_line.rstrip("\n")
 

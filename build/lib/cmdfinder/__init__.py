@@ -1,0 +1,1 @@
+from cmdfinder.ui.app import main
