@@ -1,7 +1,6 @@
 import sys
 import time
 from pathlib import Path
-
 from cmdfinder.config.config import ZSH_PATTERN
 from cmdfinder.db.db import get_conn
 from cmdfinder.utils.logger import logger

@@ -2,6 +2,8 @@ import os
 import sys
 import shutil
 from pathlib import Path
+
+from cmdfinder.db.db import init_db
 from cmdfinder.utils.logger import logger
 
 SERVICE_CONTENT = """[Unit]
@@ -20,6 +22,7 @@ WantedBy=default.target
 def install_service():
     """Create and enable a systemd user service for CmdFinder watcher."""
     logger.info("Setting up CmdFinder Watcher Service...")
+    init_db()
 
     # Locate the installed 'cmdfinder-watcher' executable
     watcher_cmd = shutil.which("cmdfinder-watcher")

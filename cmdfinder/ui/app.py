@@ -2,12 +2,10 @@ import os
 import subprocess
 import sys
 from typing import Optional
-
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual import on
 from textual.widgets import Header, Input, ListView, Label, ListItem, Footer
-
 from cmdfinder.config.config import DB_PATH
 from cmdfinder.db.db import init_db
 from cmdfinder.db.insert_command import insert_commands_in_db
