@@ -1,1 +1,1 @@
-from .app import main
+from cmdfinder.ui.app import main

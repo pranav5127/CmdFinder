@@ -1,14 +1,16 @@
 import os
-
 import subprocess
+from typing import Optional
+
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual import on
 from textual.widgets import Header, Input, ListView, Label, ListItem, Footer
-from .history import load_history, fuzzy_search, HistoryEntry
+
+from cmdfinder.history import load_history, fuzzy_search, HistoryEntry
 
 
-class CmdHistoryApp(App[str | None]):
+class CmdHistoryApp(App[Optional[str]]):
     TITLE = "cmdfinder"
     SUB_TITLE = "Search your shell history"
     CSS_PATH = "app.tcss"
@@ -23,11 +25,8 @@ class CmdHistoryApp(App[str | None]):
         ("q", "quit", "Quit"),
     ]
 
-    # Visible entries
+    # Visible entries in the UI
     items: list[HistoryEntry] = reactive([], layout=False)
-
-    # Full history
-    all_items: list[HistoryEntry] = []
 
     search_keyword: str = ""
     show_timestamps: bool = reactive(False)
@@ -40,19 +39,31 @@ class CmdHistoryApp(App[str | None]):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.all_items = load_history()
-        self.items = list(reversed(self.all_items[-200:]))
+        """Initial load from DB and focus search box."""
+        # Load latest commands directly from DB
+        self.items = load_history(limit=50)
+
+        # Focus the search box by default
+        search = self.query_one("#search", Input)
+        self.set_focus(search)
 
     # ---------- Formatting & rendering ----------
 
     def format_entry(self, entry: HistoryEntry) -> str:
         if self.show_timestamps and entry.timestamp is not None:
-            ts = entry.timestamp.strftime("%Y-%m-%d %H:%M")
+            ts = entry.timestamp.strftime("%d %b %Y %H:%M")
             return f"[{ts}]  {entry.command}"
         return entry.command
 
     def refresh_items_view(self) -> None:
         self.list_view.clear()
+
+        if not self.items:
+            self.list_view.append(
+                ListItem(Label("(no history found)", markup=False))
+            )
+            return
+
         for entry in self.items:
             self.list_view.append(
                 ListItem(
@@ -60,7 +71,7 @@ class CmdHistoryApp(App[str | None]):
                 )
             )
 
-    def watch_items(self,  items: list[HistoryEntry]) -> None:
+    def watch_items(self, items: list[HistoryEntry]) -> None:
         self.refresh_items_view()
 
     def watch_show_timestamps(self, show: bool) -> None:
@@ -71,7 +82,7 @@ class CmdHistoryApp(App[str | None]):
     @on(Input.Changed, "#search")
     def update_list_items(self, event: Input.Changed) -> None:
         self.search_keyword = event.value
-        self.items = fuzzy_search(self.search_keyword, self.all_items)
+        self.items = fuzzy_search(self.search_keyword, limit=50)
 
     # ---------- Enter selects command ----------
 
@@ -80,7 +91,7 @@ class CmdHistoryApp(App[str | None]):
         index = event.index
         if 0 <= index < len(self.items):
             cmd = self.items[index].command
-            self.exit(cmd)      # return selected command from TUI
+            self.exit(cmd)
         else:
             self.exit(None)
 
@@ -109,13 +120,14 @@ class CmdHistoryApp(App[str | None]):
 
 # ---------- Entry Point for Package ----------
 
-def main():
+def main() -> None:
     selected_cmd = CmdHistoryApp().run()
 
     if selected_cmd:
         shell = os.environ.get("SHELL", "/bin/sh")
         print(f"$ {selected_cmd}")
         subprocess.run([shell, "-lc", selected_cmd])
+
 
 if __name__ == "__main__":
     main()

@@ -1,14 +1,18 @@
-import re
+import sys
 import time
 from pathlib import Path
-from os import environ
 
-from cmdfinder.db import get_conn
-from cmdfinder.logger import logger
+from cmdfinder.config.config import ZSH_PATTERN
+from cmdfinder.db.db import get_conn
+from cmdfinder.utils.logger import logger
+from cmdfinder.utils.shell_utils import detect_shell_and_history
 
-SHELL = environ["SHELL"]
+try:
+    SHELL_TYPE, HISTORY_FILE = detect_shell_and_history()
+except RuntimeError as exc:
+    logger.error(f"Cannot start watcher: {exc}")
+    sys.exit(1)
 
-ZSH_PATTERN = re.compile(r"^: (\d+):\d+;(.*)$")
 
 def insert_commands_in_db():
     """Store already executed commands to db."""
@@ -17,7 +21,7 @@ def insert_commands_in_db():
     INSERT INTO commands (command, ts) VALUES (?, ?);
     """
 
-    if "zsh" in SHELL:
+    if "zsh" in SHELL_TYPE:
         history_file_path = Path("~/.zsh_history").expanduser()
 
         with open(history_file_path, mode="r", encoding="utf-8", errors="ignore") as f, get_conn() as connection:
@@ -42,7 +46,7 @@ def insert_commands_in_db():
         logger.info("Zsh history inserted successfully.")
         return
 
-    elif "bash" in SHELL:
+    elif "bash" in SHELL_TYPE:
         history_file_path = Path("~/.bash_history").expanduser()
 
         with open(history_file_path, mode="r", encoding="utf-8", errors="ignore") as f, get_conn() as connection:

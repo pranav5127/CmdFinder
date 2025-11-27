@@ -1,10 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
-from pathlib import Path
-
-from cmdfinder.logger import logger
-
-DB_PATH = Path("~/.cmdfinder.db").expanduser()
+from cmdfinder.config.config import DB_PATH
+from cmdfinder.utils.logger import logger
 
 @contextmanager
 def get_conn():

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
-import re
+from typing import Iterable, List
+
 from rapidfuzz import process, fuzz
+from cmdfinder.db.db import get_conn
 
 
 @dataclass
@@ -11,72 +12,110 @@ class HistoryEntry:
     timestamp: datetime | None = None
 
 
-def load_history() -> list[HistoryEntry]:
-    """Load shell history (zsh or bash), with timestamps when available."""
-    history_files = [
-        Path("~/.zsh_history").expanduser(),
-        Path("~/.bash_history").expanduser(),
-    ]
+def _rows_to_entries(rows: Iterable[tuple]) -> List[HistoryEntry]:
+    """Convert (command, ts) rows to HistoryEntry list, deduplicated."""
+    entries: list[HistoryEntry] = []
+    seen: set[tuple[str, int | None]] = set()
 
-    for path in history_files:
-        if not path.exists():
+    for command, ts in rows:
+        if ts is not None:
+            try:
+                ts_int = int(ts)
+                ts_dt: datetime | None = datetime.fromtimestamp(ts_int)
+            except (ValueError, OSError, TypeError):
+                ts_dt = None
+                ts_int = None
+        else:
+            ts_dt = None
+            ts_int = None
+
+        key = (command, ts_int)
+        if key in seen:
             continue
+        seen.add(key)
 
-        with path.open("r", encoding="utf-8", errors="ignore") as f:
-            lines = f.read().splitlines()
+        entries.append(HistoryEntry(command=command, timestamp=ts_dt))
 
-        entries: list[HistoryEntry] = []
-
-        for line in lines:
-            if line.startswith(": "):
-                m = re.match(r"^: (\d+):\d+;(.*)", line)
-                if m:
-                    ts = datetime.fromtimestamp(int(m.group(1)))
-                    cmd = m.group(2).strip()
-                    if cmd:
-                        entries.append(HistoryEntry(command=cmd, timestamp=ts))
-                    continue
-
-            cmd = line.strip()
-            if cmd:
-                entries.append(HistoryEntry(command=cmd, timestamp=None))
-
-        seen = set()
-        unique: list[HistoryEntry] = []
-        for e in entries:
-            key = (e.timestamp, e.command)
-            if key not in seen:
-                seen.add(key)
-                unique.append(e)
-        return unique
-
-    return [HistoryEntry(command="echo 'No history file found'", timestamp=None)]
+    return entries
 
 
-def fuzzy_search(query: str, entries: list[HistoryEntry], limit: int = 80) -> list[HistoryEntry]:
+def load_history(limit: int = 50) -> list[HistoryEntry]:
+    """
+    Load the most recent `limit` commands from the DB.
+
+    Results are ordered with the newest command first.
+    """
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT command, ts FROM commands ORDER BY id DESC LIMIT ?;",
+            (limit,),
+        )
+        rows = cursor.fetchall()
+
+    if not rows:
+        return [HistoryEntry(command="echo 'No commands indexed yet'")]
+
+    return _rows_to_entries(rows)
+
+
+def fuzzy_search(
+        query: str,
+        limit: int = 50,
+) -> list[HistoryEntry]:
+    """
+    Search commands using the DB.
+
+    - If query is empty: return last `limit` commands (newest first).
+    - First try a multi-word substring search in SQL:
+        all words must appear in LOWER(command).
+    - If that returns nothing, fall back to fuzzy matching over the
+      last N commands (loaded from the DB).
+    """
     query = query.strip()
     if not query:
-        return list(reversed(entries[-limit:]))
+        return load_history(limit)
 
     q_lower = query.lower()
     words = q_lower.split()
 
-    substring_matches: list[HistoryEntry] = []
-    for e in entries:
-        cmd_lower = e.command.lower()
-        if all(w in cmd_lower for w in words):
-            substring_matches.append(e)
+    # ----------  Multi-word substring search via SQL ----------
+    where_clauses = ["LOWER(command) LIKE ?"] * len(words)
+    where = " AND ".join(where_clauses)
+    params = [f"%{w}%" for w in words]
 
-    if substring_matches:
-        return list(reversed(substring_matches))[:limit]
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            f"""
+            SELECT command, ts
+            FROM commands
+            WHERE {where}
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (*params, limit * 3),
+        )
+        rows = cursor.fetchall()
 
-    commands = [e.command for e in entries]
+    candidates = _rows_to_entries(rows)
+    if candidates:
+        return candidates[:limit]
+
+    # ----------  Fallback: fuzzy match last N commands ----------
+    base = load_history(2000)
+    if not base:
+        return []
+
+    commands = [e.command for e in base]
+
     results = process.extract(
         query,
         commands,
         scorer=fuzz.WRatio,
         limit=limit,
-        score_cutoff=80,
+        score_cutoff=70,
     )
 
-    return [entries[idx] for _, _, idx in results]
+    # results: list of (command_str, score, index)
+    return [base[idx] for _, _, idx in results]
