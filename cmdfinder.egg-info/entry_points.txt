@@ -1,6 +1,0 @@
-[console_scripts]
-cf = cmdfinder.ui.app:main
-cmdfinder = cmdfinder.ui.app:main
-cmdfinder-setup = cmdfinder.utils.service_installer:install_service
-cmdfinder-watcher = cmdfinder.utils.watcher:watch
-

@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="cmdfinder",
-    version="2.2.1",
+    version="2.3.0",
     description="Search and run shell history with a Textual TUI",
     packages=find_packages(),
     python_requires=">=3.10",
