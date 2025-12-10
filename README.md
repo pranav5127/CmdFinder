@@ -118,6 +118,7 @@ cmdfinder
 | t           | Toggle timestamps   |
 | Enter       | Run selected command|
 | q           | Quit                |
+| y           | Copy
 
 ## License
 
