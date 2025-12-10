@@ -117,8 +117,8 @@ cmdfinder
 | l / Ctrl+l  | Focus list          |
 | t           | Toggle timestamps   |
 | Enter       | Run selected command|
-| q           | Quit                |
-| y           | Copy
+| q /Ctrl+q   | Quit                |
+| y           | Copy                |
 
 ## License
 
